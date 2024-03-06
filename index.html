@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Example</title>
+</head>
+<body>
+    <button id="myButton">Click me!</button>
+
+    <script>
+        // Функция для блокировки кнопки
+        function lockButton() {
+            // Блокируем кнопку
+            document.getElementById("myButton").disabled = true;
+            // Отображаем сообщение о блокировке
+            alert("Button is locked for other users.");
+        }
+
+        // Обработчик события для нажатия кнопки
+        document.getElementById("myButton").addEventListener("click", function() {
+            // Отправляем AJAX запрос на сервер
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://6570538609586eff66412160.mockapi.io/moonwalker/api/v1/user", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.buttonClicked) {
+                        // Если кнопка уже была нажата, блокируем её
+                        lockButton();
+                    } else {
+                        // Если кнопка не была нажата, меняем цвет фона
+                        document.body.style.backgroundColor = "green";
+                        // Отправляем запрос на обновление статуса кнопки на сервере
+                        var updateXHR = new XMLHttpRequest();
+                        updateXHR.open("PUT", "https://6570538609586eff66412160.mockapi.io/moonwalker/api/v1/user", true);
+                        updateXHR.setRequestHeader("Content-Type", "application/json");
+                        updateXHR.send(JSON.stringify({ buttonClicked: true }));
+                    }
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
